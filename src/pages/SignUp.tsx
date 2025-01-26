@@ -99,12 +99,16 @@ export function SignUp() {
           />
 
           {/* resend otp */}
-          <span
-            className="text-sm text-blue-600 cursor-pointer"
-            onClick={handleResendOtp}
-          >
-            Resend OTP
-          </span>
+          {otpSent ? (
+            <span
+              className="text-sm text-blue-600 cursor-pointer"
+              onClick={handleResendOtp}
+            >
+              Resend OTP
+            </span>
+          ) : (
+            <></>
+          )}
         </div>
 
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}

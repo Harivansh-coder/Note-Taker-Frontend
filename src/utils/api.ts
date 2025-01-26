@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AuthResponse, Note } from "../types";
+import { AuthResponse, Note, User } from "../types";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -31,6 +31,13 @@ export const authApi = {
   getOtp: async (data: { email: string }) => {
     const response = await api.post("/auth/otp", data);
     return response.data.otp;
+  },
+};
+
+export const userApi = {
+  getCurrentUser: async () => {
+    const response = await api.get<{ user: User }>("/users/profile");
+    return response.data.user;
   },
 };
 

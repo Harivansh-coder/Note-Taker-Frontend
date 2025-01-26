@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { CreateNoteModal } from "../components/CreateNoteModal";
-import type { Note } from "../types";
-import { notesApi } from "../utils/api";
+import { User, type Note } from "../types";
+import { notesApi, userApi } from "../utils/api";
 import logo from "../assets/top.svg";
 
 export function Dashboard() {
@@ -12,9 +12,11 @@ export function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     fetchNotes();
+    fetchCurrentUser();
   }, []);
 
   const fetchNotes = async () => {
@@ -25,6 +27,15 @@ export function Dashboard() {
       console.error("Failed to fetch notes:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchCurrentUser = async () => {
+    try {
+      const user = await userApi.getCurrentUser();
+      setCurrentUser(user);
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
     }
   };
 
@@ -70,7 +81,7 @@ export function Dashboard() {
           </div>
           <button
             onClick={handleSignOut}
-            className="text-sm text-blue-600 hover:text-blue-500"
+            className="text-sm underline font-semibold text-blue-600 hover:text-blue-500"
           >
             Sign Out
           </button>
@@ -79,8 +90,10 @@ export function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-2">Welcome!</h2>
-          <p className="text-gray-600 mb-4">Start creating your notes below.</p>
+          <h2 className="text-2xl font-bold mb-2">
+            Welcome, {currentUser?.name}!
+          </h2>
+          <p className="text-gray-600 mb-4">Email: {currentUser?.email}</p>
           <Button onClick={() => setIsModalOpen(true)}>Create Note</Button>
         </div>
 

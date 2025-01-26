@@ -9,6 +9,7 @@ export function SignUp() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ export function SignUp() {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
       dateOfBirth: formData.get("dateOfBirth") as string,
-      otp: formData.get("otp") as string,
+      otp: Number(formData.get("otp")),
     };
 
     try {
@@ -31,6 +32,26 @@ export function SignUp() {
       console.error(err);
 
       setError("Failed to sign up. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const otp = await authApi.getOtp({
+        email: (document.getElementById("email") as HTMLInputElement).value,
+      });
+
+      alert(`OTP: use ${otp} to sign up valid for 5 minutes`);
+
+      setOtpSent(true);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to send OTP. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +79,6 @@ export function SignUp() {
             id="dateOfBirth"
             name="dateOfBirth"
             type="date"
-            required
             label="Date of Birth"
           />
           <Input
@@ -77,13 +97,27 @@ export function SignUp() {
             placeholder="OTP"
             label="OTP"
           />
+
+          {/* resend otp */}
+          <span
+            className="text-sm text-blue-600 cursor-pointer"
+            onClick={handleResendOtp}
+          >
+            Resend OTP
+          </span>
         </div>
 
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
-        <Button type="submit" isLoading={isLoading}>
-          Sign up
-        </Button>
+        {otpSent ? (
+          <Button type="submit" isLoading={isLoading}>
+            Sign up
+          </Button>
+        ) : (
+          <Button type="button" onClick={handleResendOtp} isLoading={isLoading}>
+            Send OTP
+          </Button>
+        )}
       </form>
     </AuthLayout>
   );

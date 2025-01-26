@@ -5,7 +5,7 @@ export interface User {
 }
 
 export interface Note {
-  id: string;
+  _id: string;
   content: string;
   userId: string;
   createdAt: string;

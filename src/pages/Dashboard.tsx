@@ -28,23 +28,31 @@ export function Dashboard() {
     }
   };
 
+  const refetchNotes = async () => {
+    setIsLoading(true);
+    await fetchNotes();
+  };
+
   const handleCreateNote = async (content: string) => {
     const newNote = await notesApi.createNote(content);
     setNotes((prev) => [...prev, newNote]);
+    refetchNotes();
   };
 
   const handleUpdateNote = async (content: string) => {
     if (!selectedNote) return;
-    const updatedNote = await notesApi.updateNote(selectedNote.id, content);
+    const updatedNote = await notesApi.updateNote(selectedNote._id, content);
     setNotes((prev) =>
-      prev.map((note) => (note.id === updatedNote.id ? updatedNote : note))
+      prev.map((note) => (note._id === updatedNote._id ? updatedNote : note))
     );
     setSelectedNote(null);
+    refetchNotes();
   };
 
   const handleDeleteNote = async (id: string) => {
     await notesApi.deleteNote(id);
-    setNotes((prev) => prev.filter((note) => note.id !== id));
+    setNotes((prev) => prev.filter((note) => note._id !== id));
+    refetchNotes();
   };
 
   const handleSignOut = () => {
@@ -86,7 +94,7 @@ export function Dashboard() {
           ) : (
             notes.map((note) => (
               <div
-                key={note.id}
+                key={note._id}
                 className="bg-white rounded-lg shadow p-4 flex items-start justify-between"
               >
                 <div className="flex-1">
@@ -118,7 +126,7 @@ export function Dashboard() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDeleteNote(note.id)}
+                    onClick={() => handleDeleteNote(note._id)}
                     className="text-gray-400 hover:text-gray-500"
                   >
                     <svg

@@ -19,7 +19,7 @@ export const authApi = {
     name: string;
     email: string;
     dateOfBirth: string;
-    otp: string;
+    otp: number;
   }) => {
     const response = await api.post<AuthResponse>("/auth/signup", data);
     return response.data;
